@@ -23,7 +23,7 @@ class AnimationView: UIView {
         setup()
     }
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
         setup()
@@ -52,7 +52,7 @@ class AnimationView: UIView {
     
     func prepareAnimation() {
         if nil != baseLayer.sublayers {
-            for subLayer in baseLayer.sublayers {
+            for subLayer in baseLayer.sublayers! {
                 subLayer.removeAllAnimations()
             }
             baseLayer.sublayers = nil
@@ -94,25 +94,25 @@ class AnimationView: UIView {
         var elements = Array<(CALayer, CAAnimation)>()
         
         for circle in circles {
-            var layer = CAShapeLayer()
+            let layer = CAShapeLayer()
             self.baseLayer.addSublayer(layer)
             layer.fillColor = UIColor.clearColor().CGColor
             layer.strokeColor = guideLineColor.CGColor
             layer.lineWidth = 1
-            layer.lineCap = kCALineCapRound.substringFromIndex(0)
+            layer.lineCap = kCALineCapRound
             layer.opacity = 0
             layer.path = UIBezierPath(arcCenter: circle.center, radius: 0.001, startAngle: 0, endAngle: CGFloat(M_PI) * 2, clockwise: true).CGPath
             
-            var pathAnimation = CABasicAnimation(keyPath: "path")
+            let pathAnimation = CABasicAnimation(keyPath: "path")
             pathAnimation.toValue = UIBezierPath(arcCenter: circle.center, radius: circle.radius, startAngle: 0, endAngle: CGFloat(M_PI) * 2, clockwise: true).CGPath
             
-            var opacityAnimation = CABasicAnimation(keyPath: "opacity")
+            let opacityAnimation = CABasicAnimation(keyPath: "opacity")
             opacityAnimation.toValue = 1
             
-            var animation = CAAnimationGroup()
+            let animation = CAAnimationGroup()
             animation.animations = [pathAnimation, opacityAnimation]
             animation.removedOnCompletion = false
-            animation.fillMode = kCAFillModeForwards.substringFromIndex(0)
+            animation.fillMode = kCAFillModeForwards
             
             elements.append((layer, animation) as (CALayer, CAAnimation))
         }
@@ -124,30 +124,30 @@ class AnimationView: UIView {
         var elements = Array<(CALayer, CAAnimation)>()
         
         for line in lines {
-            var layer = CAShapeLayer()
+            let layer = CAShapeLayer()
             baseLayer.addSublayer(layer)
             layer.fillColor = UIColor.clearColor().CGColor
             layer.strokeColor = guideLineColor.CGColor
             layer.lineWidth = 1
-            layer.lineCap = kCALineCapRound.substringFromIndex(0)
+            layer.lineCap = kCALineCapRound
             layer.opacity = 0
             
-            var path = UIBezierPath()
+            let path = UIBezierPath()
             path.moveToPoint(line.from)
             path.addLineToPoint(line.to)
             layer.path = path.CGPath
             
-            var strokeAnimation = CABasicAnimation(keyPath: "strokeEnd")
+            let strokeAnimation = CABasicAnimation(keyPath: "strokeEnd")
             strokeAnimation.fromValue = 0
             strokeAnimation.toValue = strokeEnd
             
-            var opacityAnimation = CABasicAnimation(keyPath: "opacity")
+            let opacityAnimation = CABasicAnimation(keyPath: "opacity")
             opacityAnimation.toValue = 1
             
-            var animation = CAAnimationGroup()
+            let animation = CAAnimationGroup()
             animation.animations = [strokeAnimation, opacityAnimation]
             animation.removedOnCompletion = false
-            animation.fillMode = kCAFillModeForwards.substringFromIndex(0)
+            animation.fillMode = kCAFillModeForwards
             
             elements.append((layer, animation) as (CALayer, CAAnimation))
         }
@@ -158,7 +158,7 @@ class AnimationView: UIView {
     func applyAnimation(elements: Array<(CALayer, CAAnimation)>!, duration: CFTimeInterval, completion: (() -> Void)?) {
         CATransaction.begin()
         CATransaction.setAnimationDuration(duration)
-        CATransaction.setAnimationTimingFunction(CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut.substringFromIndex(0)))
+        CATransaction.setAnimationTimingFunction(CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut))
         CATransaction.setCompletionBlock(completion)
         for (layer, animation) in elements {
             layer.addAnimation(animation, forKey: "animation")
@@ -166,13 +166,13 @@ class AnimationView: UIView {
         CATransaction.commit()
     }
     
-    func animationPhase0(#didStop: ((CAAnimation!, Bool) -> Void)?) {
-        var cornerRadiusAnimation = CABasicAnimation(keyPath: "cornerRadius")
+    func animationPhase0(didStop didStop: ((CAAnimation!, Bool) -> Void)?) {
+        let cornerRadiusAnimation = CABasicAnimation(keyPath: "cornerRadius")
         cornerRadiusAnimation.toValue = baseCornerRadius
         cornerRadiusAnimation.duration = animationDurations[0]
-        cornerRadiusAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut.substringFromIndex(0))
+        cornerRadiusAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
         cornerRadiusAnimation.removedOnCompletion = false
-        cornerRadiusAnimation.fillMode = kCAFillModeForwards.substringFromIndex(0)
+        cornerRadiusAnimation.fillMode = kCAFillModeForwards
         cornerRadiusAnimation.didStop = didStop
         baseLayer.addAnimation(cornerRadiusAnimation, forKey: "cornerRadiusAnimation")
     }
@@ -181,7 +181,7 @@ class AnimationView: UIView {
         let d = baseDimension
         let d3 = d / 3
         
-        var lines = [
+        let lines = [
             (from: CGPointMake(0, d3), to: CGPointMake(d, d3)),
             (from: CGPointMake(d, d3), to: CGPointMake(0, d3)),
             (from: CGPointMake(0, d3 * 2), to: CGPointMake(d, d3 * 2)),
@@ -192,7 +192,7 @@ class AnimationView: UIView {
             (from: CGPointMake(d3 * 2, d), to: CGPointMake(d3 * 2, 0)),
         ]
         
-        var elements = strokeAnimationElements(lines, strokeEnd: 0.5)
+        let elements = strokeAnimationElements(lines, strokeEnd: 0.5)
         applyAnimation(elements, duration: animationDurations[1], completion: nil)
     }
     
@@ -200,14 +200,14 @@ class AnimationView: UIView {
         let d = baseDimension
         let d2 = d / 2
         
-        var lines = [
+        let lines = [
             (from: CGPointMake(d2, d2), to: CGPointMake(0, 0)),
             (from: CGPointMake(d2, d2), to: CGPointMake(d, 0)),
             (from: CGPointMake(d2, d2), to: CGPointMake(0, d)),
             (from: CGPointMake(d2, d2), to: CGPointMake(d, d)),
         ]
         
-        var elements = strokeAnimationElements(lines, strokeEnd: 1)
+        let elements = strokeAnimationElements(lines, strokeEnd: 1)
         applyAnimation(elements, duration: animationDurations[2], completion: nil)
     }
     
@@ -215,7 +215,7 @@ class AnimationView: UIView {
         let d = baseDimension
         let delta = baseCornerRadius * CGFloat(1 - sin(M_PI_4))
         
-        var lines = [
+        let lines = [
             (from: CGPointMake(0, delta), to: CGPointMake(d, delta)),
             (from: CGPointMake(d, delta), to: CGPointMake(0, delta)),
             (from: CGPointMake(delta, 0), to: CGPointMake(delta, d)),
@@ -226,7 +226,7 @@ class AnimationView: UIView {
             (from: CGPointMake(d, d - delta), to: CGPointMake(0, d - delta)),
         ]
         
-        var elements = strokeAnimationElements(lines, strokeEnd: 0.5)
+        let elements = strokeAnimationElements(lines, strokeEnd: 0.5)
         applyAnimation(elements, duration: animationDurations[3], completion: nil)
     }
     
@@ -235,36 +235,36 @@ class AnimationView: UIView {
         let d2 = d / 2
         let d6 = d / 6
         
-        var lines = [
+        let lines = [
             (from: CGPointMake(d2, d2), to: CGPointMake(d2, 0)),
             (from: CGPointMake(d2, d2), to: CGPointMake(0, d2)),
             (from: CGPointMake(d2, d2), to: CGPointMake(d, d2)),
             (from: CGPointMake(d2, d2), to: CGPointMake(d2, d)),
         ]
         
-        var elements = strokeAnimationElements(lines, strokeEnd: 1)
+        let elements = strokeAnimationElements(lines, strokeEnd: 1)
         applyAnimation(elements, duration: animationDurations[4] * 0.4, completion: nil)
         
-        var circles = [
+        let circles = [
             (center: CGPointMake(d2, d2), radius: d2 - baseCornerRadius * (1 - CGFloat(sin(M_PI_4)))),
             (center: CGPointMake(d2, d2), radius: d6 / CGFloat(sin(M_PI_4))),
             (center: CGPointMake(d2, d2), radius: d6),
         ]
         
-        var circleElements: Array<(CALayer, CAAnimation)> = circleAnimationElements(circles)
+        let circleElements: Array<(CALayer, CAAnimation)> = circleAnimationElements(circles)
         
         CATransaction.begin()
         CATransaction.setAnimationDuration(animationDurations[4])
-        CATransaction.setAnimationTimingFunction(CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut.substringFromIndex(0)))
+        CATransaction.setAnimationTimingFunction(CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut))
         CATransaction.setCompletionBlock({ [weak self] () -> Void in
-            var delay = dispatch_time(DISPATCH_TIME_NOW, Int64(0.8 * Double(NSEC_PER_SEC)))
+            let delay = dispatch_time(DISPATCH_TIME_NOW, Int64(0.8 * Double(NSEC_PER_SEC)))
             dispatch_after(delay, dispatch_get_main_queue(), {
                 self!.playAnimation()
                 })
             })
         
-        var interval = CACurrentMediaTime()
-        for (index, (layer, animation)) in enumerate(circleElements) {
+        let interval = CACurrentMediaTime()
+        for (index, (layer, animation)) in circleElements.enumerate() {
             animation.beginTime = interval + CFTimeInterval(index) * 0.2
             animation.duration = animationDurations[4] * (1 - 0.2 * Double(index))
             layer.addAnimation(animation, forKey: "animation")
@@ -283,13 +283,13 @@ class CAAnimationDelagate: NSObject {
     var didStar: ((CAAnimation!) -> Void)?
     var didStop: ((CAAnimation!, Bool) -> Void)?
     
-    override func animationDidStart(anim: CAAnimation!) {
+    override func animationDidStart(anim: CAAnimation) {
         if (nil != didStar) {
             didStar!(anim)
         }
     }
     
-    override func animationDidStop(anim: CAAnimation!, finished flag: Bool) {
+    override func animationDidStop(anim: CAAnimation, finished flag: Bool) {
         if (nil != didStop) {
             didStop!(anim, flag)
         }
@@ -312,7 +312,7 @@ extension CAAnimation {
             if let delegate = self.delegate as? CAAnimationDelagate {
                 delegate.didStar = newValue
             } else {
-                var delegate = CAAnimationDelagate()
+                let delegate = CAAnimationDelagate()
                 delegate.didStar = newValue
                 self.delegate = delegate
             }
@@ -332,7 +332,7 @@ extension CAAnimation {
             if let delegate = self.delegate as? CAAnimationDelagate {
                 delegate.didStop = newValue
             } else {
-                var delegate = CAAnimationDelagate()
+                let delegate = CAAnimationDelagate()
                 delegate.didStop = newValue
                 self.delegate = delegate
             }
